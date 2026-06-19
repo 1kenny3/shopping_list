@@ -13,14 +13,22 @@ def main_page(page: ft.Page):
         product_list.controls.clear()
         for product_id, product, completed in main_db.get_products(filter_type):
             product_list.controls.append(
-                view_product(product_id=product_id, product_text=product, completed=completed)
+                view_product(
+                    product_id=product_id, product_text=product, completed=completed
+                )
             )
         page.update()
 
     def view_product(product_id, product_text, completed):
         product_field = ft.TextField(value=product_text, read_only=True, expand=True)
 
-        checkbox = ft.Checkbox(value=bool(completed), on_change=lambda e: toggle_task(product_id=product_id, is_completed=e.control.value))
+        checkbox = ft.Checkbox(
+            value=bool(completed),
+            on_change=lambda e: toggle_task(
+                product_id=product_id, is_completed=e.control.value
+            ),
+        )
+
         def delete_product(_):
             main_db.delete_product_db(product_id)
             product_list.controls.remove(row)
@@ -34,7 +42,8 @@ def main_page(page: ft.Page):
         )
         row = ft.Row([checkbox, product_field, delete_btn])
         return row
-    def toggle_task(product_id,is_completed):
+
+    def toggle_task(product_id, is_completed):
         main_db.toggle_product_db(product_id=product_id, completed=int(is_completed))
 
     def add_product(_):
@@ -42,16 +51,16 @@ def main_page(page: ft.Page):
             product_text = product_input.value.strip()
             product_id = main_db.add_product_db(product=product_text)
             product_list.controls.append(
-                view_product(product_id=product_id, product_text=product_text, completed=False)
+                view_product(
+                    product_id=product_id, product_text=product_text, completed=False
+                )
             )
             product_input.value = ""
             page.update()
 
     product_input = ft.TextField(label="Добавить продукт", on_submit=add_product)
 
-    add_button = ft.Button(
-        "добавить в список", icon=ft.Icons.ADD, on_click=add_product
-    )
+    add_button = ft.Button("добавить в список", icon=ft.Icons.ADD, on_click=add_product)
     main_row = ft.Row(
         [product_input, add_button], alignment=ft.MainAxisAlignment.CENTER
     )
@@ -63,9 +72,9 @@ def main_page(page: ft.Page):
 
     filter_buttons = ft.Row(
         [
-            ft.Button("все продукты", on_click=lambda e: set_filter("all")),
-            ft.Button("корзина", on_click=lambda e: set_filter("uncompleted")),
-            ft.Button("купленно", on_click=lambda e: set_filter("completed")),
+            ft.Button("Все", on_click=lambda e: set_filter("all")),
+            ft.Button("Некупленные", on_click=lambda e: set_filter("uncompleted")),
+            ft.Button("Купленные", on_click=lambda e: set_filter("completed")),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
     )
